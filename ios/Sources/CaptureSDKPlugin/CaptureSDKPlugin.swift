@@ -10,14 +10,26 @@ public class CaptureSDKPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "CaptureSDKPlugin"
     public let jsName = "CaptureSDK"
     public let pluginMethods: [CAPPluginMethod] = [
-        CAPPluginMethod(name: "echo", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "initCapture", returnType: CAPPluginReturnPromise)
     ]
     private let implementation = CaptureSDK()
 
-    @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        call.resolve([
-            "value": implementation.echo(value)
-        ])
+    @objc func initCapture(_ call: CAPPluginCall) {
+        guard let devId = call.options["devId"] as? String else {
+            call.reject("Must provide dev id")
+            return
+        }
+        guard let appId = call.options["appId"] as? String else {
+            call.reject("Must provide app id")
+            return
+        }
+        guard let appKey = call.options["appKey"] as? String else {
+            call.reject("Must provide app key")
+            return
+        }
+
+        call.resolve(["result": implementation.initSDK(devId, appId, appKey)])
+
+        call.reject("initialization failed")
     }
 }
