@@ -1,5 +1,5 @@
 {
-  "appId": "com.example.plugin",
+  "appId": "com.capturesdkcapacitor.plugin",
   "appName": "example-app",
   "webDir": "dist",
   "plugins": {

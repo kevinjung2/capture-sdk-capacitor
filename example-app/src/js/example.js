@@ -1,6 +1,13 @@
 import { CaptureSDK } from 'capture-sdk-capacitor';
+import { SplashScreen } from '@capacitor/splash-screen';
 
-window.testEcho = () => {
-    const inputValue = document.getElementById("echoInput").value;
-    CaptureSDK.echo({ value: inputValue })
+window.onload = () => {
+    SplashScreen.hide()
+}
+
+window.testInit = () => {
+    const devId = document.getElementById("devIdInput").value;
+    const appId = document.getElementById("appIdInput").value;
+    const appKey = document.getElementById("appKeyInput").value;
+    CaptureSDK.initCapture({ devId, appId, appKey })
 }
