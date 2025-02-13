@@ -3,6 +3,20 @@ import { SplashScreen } from '@capacitor/splash-screen';
 
 window.onload = () => {
     SplashScreen.hide()
+    // Needs to listen to events sent by plugin
+    window.addEventListener("DeviceManagerArrival", (data) => {
+        CaptureSDK.setFavorite("*")
+        console.log("client receives DeviceManagerArrival with data:", data)
+    })
+    window.addEventListener("DeviceManagerRemoval", (data) => {
+        console.log("client receives DeviceManagerRemoval with data:", data)
+    })
+    window.addEventListener("DeviceArrival", (data) => {
+        console.log("client receives DeviceArrival with data:", data)
+    })
+    window.addEventListener("DeviceRemoval", (data) => {
+        console.log("client receives DeviceRemoval with data:", data)
+    })
 }
 
 window.testInit = () => {
