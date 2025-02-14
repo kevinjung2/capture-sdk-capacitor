@@ -80,3 +80,4 @@ setFavorite(options: { favorite: string }) => Promise<{ result: string; }>
 --------------------
 
 </docgen-api>
+

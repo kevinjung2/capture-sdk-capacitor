@@ -18,10 +18,12 @@ public class CaptureSDKPlugin: CAPPlugin, CAPBridgedPlugin {
     //TODO:: set all of these callbacks to the same listenertype, that also returns data to identify which
     // type of event is being emmitted, that way the client only needs to set up one event listener.
     func setCallbacks(){
-        implementation.eventCallbacksManager.append { device in self.notifyListeners("DeviceManagerArrival", ["data": device]) }
-        implementation.eventCallbacksManager.append { device in self.notifyListeners("DeviceManagerRemoval", ["data": device]) }
-        implementation.eventCallbacksDevice.append { device in self.notifyListeners("DeviceArrival", ["data": device]) }
-        implementation.eventCallbacksDevice.append { device in self.notifyListeners("DeviceRemoval", ["data": device]) }
+        print("setting callbacks")
+        implementation.eventCallbacksManager.append { device in self.notifyListeners("DeviceManagerArrival", data: ["device": device]) }
+        implementation.eventCallbacksManager.append { device in self.notifyListeners("DeviceManagerRemoval", data: ["device": device]) }
+        implementation.eventCallbacksDevice.append { device in self.notifyListeners("DeviceArrival", data: ["device": device]) }
+        implementation.eventCallbacksDevice.append { device in self.notifyListeners("DeviceRemoval", data: ["device": device]) }
+        print(implementation.evenCallbacksManager.count)
     }
 
     @objc func initCapture(_ call: CAPPluginCall) {
@@ -41,7 +43,7 @@ public class CaptureSDKPlugin: CAPPlugin, CAPBridgedPlugin {
         //todo:: fix resolve reject to only reject when initSDK fails
         call.resolve(["result": implementation.initSDK(devId, appId, appKey)])
 
-        call.reject("initialization failed")
+        // call.reject("initialization failed")
     }
 
     @objc func setFavorite(_ call: CAPPluginCall) {
@@ -50,6 +52,6 @@ public class CaptureSDKPlugin: CAPPlugin, CAPBridgedPlugin {
             return
         }
 
-        call.resolve(["result": implentation.setFavorite(favoriteString)])
+        call.resolve(["result": implementation.setFavorite(favoriteString)])
     }
 }

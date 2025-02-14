@@ -1,7 +1,11 @@
 import Foundation
 import CaptureSDK
 
-@objc public class CaptureSDK: NSObject, CaptureHelperDelegate {
+@objc public class CaptureSDK: 
+    NSObject, 
+    CaptureHelperDelegate, 
+    CaptureHelperDevicePresenceDelegate {
+
     var captureHelper = CaptureHelper.sharedInstance
     var deviceManager: CaptureHelperDeviceManager?
     // here we store all of the callback functions so that we can send the events to the plugin
@@ -9,11 +13,11 @@ import CaptureSDK
     // order of events are:
     //  0. deviceManagerArrival
     //  1. deviceManagerRemoval
-    public var eventCallbacksManager: [(CaptureHelperDeviceManager)->void] = []
+    public var eventCallbacksManager: [(CaptureHelperDeviceManager)->()] = []
     // then down here we store the Device Callbacks
     //  0. deviceArrival
     //  1. deviceRemoval
-    public var eventCallbacksDevice: [(CaptureHelperDevice)->void] = []
+    public var eventCallbacksDevice: [(CaptureHelperDevice)->()] = []
 
     @objc public func initSDK(_ devId: String, _ appId: String, _ appKey: String) -> String {
         captureHelper.dispatchQueue = DispatchQueue.main
@@ -38,26 +42,26 @@ import CaptureSDK
                 })
     }
 
-    func didNotifyArrivalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
+    public func didNotifyArrivalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
         print("Device manager arrival")
         deviceManager = device
-        eventCallbacksManager[0]()
+        eventCallbacksManager[0](device)
     }
 
-    func didNotifyRemovalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
+    public func didNotifyRemovalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
         print("Device manager removal")
         deviceManager = nil
-        eventCallbacksManager[1]()
+        eventCallbacksManager[1](device)
     }
 
-    func didNotifyArrivalForDevice(_ device: CaptureHelperDevice, withResult result: SKTResult) {
+    public func didNotifyArrivalForDevice(_ device: CaptureHelperDevice, withResult result: SKTResult) {
         print("Main view device arrival:\(String(describing: device.deviceInfo.name))")
-        eventCallbacksDevice[0]()
+        eventCallbacksDevice[0](device)
     }
 
-    func didNotifyRemovalForDevice(_ device: CaptureHelperDevice, withResult result: SKTResult) {
+    public func didNotifyRemovalForDevice(_ device: CaptureHelperDevice, withResult result: SKTResult) {
         print("Main view device removal:\(device.deviceInfo.name!)")
-        eventCallbacksDevice[1]()
+        eventCallbacksDevice[1](device)
     }
 
 }
