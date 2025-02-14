@@ -4,7 +4,8 @@ import CaptureSDK
 @objc public class CaptureSDK: 
     NSObject, 
     CaptureHelperDelegate, 
-    CaptureHelperDevicePresenceDelegate {
+    CaptureHelperDevicePresenceDelegate,
+    CaptureHelperDeviceDecodedDataDelegate {
 
     var captureHelper = CaptureHelper.sharedInstance
     var deviceManager: CaptureHelperDeviceManager?
@@ -18,6 +19,9 @@ import CaptureSDK
     //  0. deviceArrival
     //  1. deviceRemoval
     public var eventCallbacksDevice: [(CaptureHelperDevice)->()] = []
+    // then down here we store the callbacks for when the app recieves data
+    //  o. decodedDataReceived
+    public var eventCallbacksData: [(CaptureHelperDevice, SKTCaptureDecodedData, String)->()] = []
 
     @objc public func initSDK(_ devId: String, _ appId: String, _ appKey: String) -> String {
         captureHelper.dispatchQueue = DispatchQueue.main
@@ -62,6 +66,21 @@ import CaptureSDK
     public func didNotifyRemovalForDevice(_ device: CaptureHelperDevice, withResult result: SKTResult) {
         print("Main view device removal:\(device.deviceInfo.name!)")
         eventCallbacksDevice[1](device)
+    }
+
+    public func didReceiveDecodedData(_ decodedData: SKTCaptureDecodedData?, fromDevice device: CaptureHelperDevice, withResult result: SKTResult) {
+        if result == SKTCaptureErrors.E_NOERROR {
+            guard let unwrappedData = decodedData else {
+                print("no data")
+                return
+            }
+            let rawData = unwrappedData.decodedData
+            let string = unwrappedData.stringFromDecodedData()!
+            print("data: \(String(describing: decodedData?.decodedData))")
+            print("Decoded Data \(String(describing: string))")
+
+            eventCallbacksData[0](device, unwrappedData, string)
+        }
     }
 
 }

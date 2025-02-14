@@ -17,6 +17,9 @@ window.onload = () => {
     window.addEventListener("DeviceRemoval", (data) => {
         console.log("client receives DeviceRemoval with data:", data)
     })
+    window.addEventListener("DecodedDataRecieved", (data) => {
+        console.log("client receives DecodedData with data:", data)
+    })
 }
 
 window.testInit = () => {
