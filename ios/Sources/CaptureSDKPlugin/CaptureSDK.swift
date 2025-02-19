@@ -3,9 +3,11 @@ import CaptureSDK
 
 @objc public class CaptureSDK: 
     NSObject, 
-    CaptureHelperDelegate, 
+    SKTCaptureHelperDelegate,
+    CaptureHelperDeviceManagerPresenceDelegate,
     CaptureHelperDevicePresenceDelegate,
-    CaptureHelperDeviceDecodedDataDelegate {
+    CaptureHelperDeviceDecodedDataDelegate,
+    CaptureHelperErrorDelegate {
 
     var captureHelper = CaptureHelper.sharedInstance
     var deviceManager: CaptureHelperDeviceManager?
@@ -36,18 +38,22 @@ import CaptureSDK
         return "success"
     }
 
-    func setFavorite(_ favorite: String) {
+    func setFavorite(_ favorite: String) -> String {
         guard let manager = deviceManager else {
             print("No device manager present")
-            return
+            return "failed"
         }
         manager.setFavoriteDevices(favorite, withCompletionHandler: { (result) in
-                print("setting new favorites returned \(result.rawValue)")
-                })
+            print("setting new favorites returned \(result.rawValue)")
+            if(result == SKTCaptureErrors.E_NOERROR){
+                print("no errors from set Favorites")
+            }
+        })
+        return "success"
     }
 
     public func didNotifyArrivalForDeviceManager(_ device: CaptureHelperDeviceManager, withResult result: SKTResult) {
-        print("Device manager arrival")
+        print("Device manager arrival \(result.rawValue)")
         deviceManager = device
         eventCallbacksManager[0](device)
     }
@@ -74,13 +80,18 @@ import CaptureSDK
                 print("no data")
                 return
             }
-            let rawData = unwrappedData.decodedData
+            //let rawData = unwrappedData.decodedData
             let string = unwrappedData.stringFromDecodedData()!
             print("data: \(String(describing: decodedData?.decodedData))")
             print("Decoded Data \(String(describing: string))")
 
             eventCallbacksData[0](device, unwrappedData, string)
+        } else {
+            print(result.rawValue)
         }
     }
-
+    
+    public func didReceiveError(_ error: SKTResult) {
+        print("Receive a Capture error: \(error)")
+    }
 }
